@@ -48,10 +48,10 @@ public class Voldemort {
 			
 			// Once you're comfortable with the first method, comment in this
 			// method, read the source, run it, change and rerun it, etc.
-			inconsistentWrite(store);
+//			inconsistentWrite(store);
 
 		} finally {
-			// Ensure that we dispose of the connection to the database
+			// This code ensures that we dispose of the connection to the database
 			// even if an exception is raised during the execution of
 			// our program
 			connection.finalise();
