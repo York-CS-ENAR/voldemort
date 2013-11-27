@@ -1,12 +1,10 @@
 package enar.voldemort;
 
-import voldemort.client.ClientConfig;
-import voldemort.client.SocketStoreClientFactory;
+import voldemort.client.MockStoreClientFactory;
 import voldemort.client.StoreClient;
 import voldemort.client.StoreClientFactory;
-import voldemort.cluster.Node;
-import voldemort.server.VoldemortConfig;
-import voldemort.server.VoldemortServer;
+import voldemort.serialization.ObjectSerializer;
+import voldemort.serialization.StringSerializer;
 
 
 /**
@@ -19,12 +17,14 @@ import voldemort.server.VoldemortServer;
  */
 public class Connection {
 	
-	private VoldemortServer server;
 	private StoreClientFactory storeFactory;
 	
 	public Connection() {
-		this.server = initialiseServer();
-		this.storeFactory = initialiseStoreFactory(this.server);
+		this.storeFactory = new MockStoreClientFactory(
+			new StringSerializer(),
+			new ObjectSerializer<Object>(),
+			new StringSerializer()
+		);
 	}
 
 	public StoreClient getStore(String storeName) {
@@ -32,27 +32,9 @@ public class Connection {
 	}
 
 	public void finalise() {
-		server.stop();
-	}
-
-	private VoldemortServer initialiseServer() {
-		VoldemortConfig config = VoldemortConfig.loadFromEnvironmentVariable();
-		VoldemortServer server = new VoldemortServer(config);
-
-		if (!server.isStarted()) {
-			server.start();
-		}
-		
-		return server;
-	}
-	
-	private StoreClientFactory initialiseStoreFactory(VoldemortServer server) {
-		Node node = server.getIdentityNode();
-
-		StoreClientFactory factory = new SocketStoreClientFactory(
-				new ClientConfig().setBootstrapUrls("tcp://" + node.getHost()
-						+ ":" + node.getSocketPort()));
-
-		return factory;
+		// noop
+		// Implementation required if we ever switch back
+		// to an implementation of StoreClientFactory that
+		// hits a real server
 	}
 }
